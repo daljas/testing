@@ -1,8 +1,8 @@
 # Specify the path to the background image
-$backgroundImagePath = "C:\Path\To\Your\Image.jpg"
+$backgroundImagePath = "https://raw.githubusercontent.com/avalon-lake-tech/mrbeast-scripts/main/avalonlake-desktop.png"
 
 # Set the background for the current user
-Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop\' -Name Wallpaper -Value $backgroundImagePath
+SystemParametersInfo 0x0014, 0, $backgroundImagePath, 0
 # Force an immediate update
 RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters
 
