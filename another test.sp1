@@ -1,0 +1,12 @@
+# Specify the path to the background image
+$imagePath = "C:\Path\To\Your\Image.jpg"
+
+# Set the registry key for the default user profile background
+$regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI"
+$regName = "Background"
+
+# Copy the image to the default user profile folder
+Copy-Item $imagePath -Destination "C:\Users\Default\AppData\Roaming\Microsoft\Windows\Themes\TranscodedWallpaper" -Force
+
+# Set the registry value for the background image
+Set-ItemProperty -Path $regPath -Name $regName -Value 1
