@@ -1,7 +1,7 @@
 # Define URLs for Slack, Zoom, and AnyDesk
-$slackUrl = "https://slack.com/downloads/windows"
-$zoomUrl = "https://zoom.us/client/latest/ZoomInstaller.exe"
-$anyDeskUrl = "https://download.anydesk.com/AnyDesk.exe"
+$slackUrl = "https://downloads.slack-edge.com/releases/windows/4.35.126/prod/x64/SlackSetup.exe"
+$zoomUrl = "https://zoom.us/client/5.16.6.24712/ZoomInstallerFull.exe?archType=x64"
+$anyDeskUrl = "https://anydesk.com/en/downloads/thank-you?dv=win_exe"
 
 # Define download paths
 $slackPath = "$env:USERPROFILE\Downloads\SlackSetup.exe"
