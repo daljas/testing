@@ -1,5 +1,5 @@
 # Define URLs for Slack, Zoom, and AnyDesk
-$slackUrl = "https://downloads.slack-edge.com/releases/windows/4.35.126/prod/x64/SlackSetup.exe"
+$slackUrl = "https://codefellows.slack.com/archives/C065724314Y/p1700183701218439"
 $zoomUrl = "https://zoom.us/client/5.16.6.24712/ZoomInstallerFull.exe?archType=x64"
 $anyDeskUrl = "https://anydesk.com/en/downloads/thank-you?dv=win_exe"
 
@@ -8,26 +8,29 @@ $slackPath = "$env:USERPROFILE\Downloads\SlackSetup.exe"
 $zoomPath = "$env:USERPROFILE\Downloads\ZoomInstaller.exe"
 $anyDeskPath = "$env:USERPROFILE\Downloads\AnyDesk.exe"
 
-# Download Slack in the background
-Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"Invoke-WebRequest -Uri '$slackUrl' -OutFile '$slackPath' -UseBasicParsing`"" -PassThru | Wait-Process
+# Function to download and install an application
+function DownloadAndInstall {
+    param (
+        [string]$Url,
+        [string]$Path
+    )
 
-# Download Zoom in the background
-Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"Invoke-WebRequest -Uri '$zoomUrl' -OutFile '$zoomPath' -UseBasicParsing`"" -PassThru | Wait-Process
+    # Download the application
+    Invoke-WebRequest -Uri $Url -OutFile $Path -UseBasicParsing
 
-# Download AnyDesk in the background
-Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"Invoke-WebRequest -Uri '$anyDeskUrl' -OutFile '$anyDeskPath' -UseBasicParsing`"" -PassThru | Wait-Process
+    # Install the application
+    Start-Process -Wait -FilePath $Path
+}
 
-# Wait for all processes to finish
-Wait-Process
-Write-Host "Downloads completed. Now starting installations."
+# Start jobs for downloading and installing each application
+Start-Job -ScriptBlock { DownloadAndInstall -Url $slackUrl -Path $slackPath }
+Start-Job -ScriptBlock { DownloadAndInstall -Url $zoomUrl -Path $zoomPath }
+Start-Job -ScriptBlock { DownloadAndInstall -Url $anyDeskUrl -Path $anyDeskPath }
 
-# Install Slack
-Start-Process -Wait -FilePath $slackPath
+# Wait for all jobs to complete
+Get-Job | Wait-Job
 
-# Install Zoom
-Start-Process -Wait -FilePath $zoomPath
-
-# Install AnyDesk
-Start-Process -Wait -FilePath $anyDeskPath
+# Receive the job results (optional)
+Receive-Job -AutoRemoveJob
 
 Write-Host "Installations completed."
