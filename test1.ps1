@@ -1,19 +1,21 @@
 # Set the desktop background for the current user
 $currentUserBackgroundPath = "https://raw.githubusercontent.com/avalon-lake-tech/mrbeast-scripts/main/avalonlake-desktop.png"
-SystemParametersInfo(20, 0, $currentUserBackgroundPath, 3)
+Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop\' -Name Wallpaper -Value $currentUserBackgroundPath
+# Refresh the desktop to apply changes
+RUNDLL32.EXE USER32.DLL,UpdatePerUserSystemParameters, 1, True
 
 # Set the default desktop background for new users
 $newUserBackgroundPath = "https://raw.githubusercontent.com/avalon-lake-tech/mrbeast-scripts/main/avalonlake-desktop.png"
-$registryPath = "HKU\.DEFAULT\Control Panel\Desktop"
-New-ItemProperty -Path $registryPath -Name Wallpaper -Value $newUserBackgroundPath -PropertyType String
-SystemParametersInfo(20, 0, $newUserBackgroundPath, 3)
+$registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI"
+Set-ItemProperty -Path $registryPath -Name 'Background' -Value $newUserBackgroundPath
 
-# Function to call SystemParametersInfo
-function SystemParametersInfo($uiAction, $uiParam, $pvParam, $fWinIni) {
-    $signature = @"
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    public static extern bool SystemParametersInfo(int uiAction, int uiParam, string pvParam, int fWinIni);
-"@
-    $type = Add-Type -MemberDefinition $signature -Name SystemParametersInfo -Namespace User32 -PassThru
-    $type::SystemParametersInfo($uiAction, $uiParam, $pvParam, $fWinIni) | Out-Null
+# Function to refresh the desktop
+function Refresh-Desktop {
+    param([Parameter(Position=0, Mandatory=$true)] [string]$Path)
+
+    $explorer = New-Object -ComObject shell.application
+    $explorer.NameSpace($Path).ParseName('desktop.ini').InvokeVerb('install')
 }
+
+# Refresh the desktop for new users
+Refresh-Desktop -Path "$env:SystemRoot\system32\config\systemprofile\Desktop"
